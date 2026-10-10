@@ -577,7 +577,7 @@ public partial class IoStoreReader : AbstractAesVfsReader
                 {
                     PackageIdIndex[chunkId.AsPackageId()] = entry;
                 }
-                files[path] = entry;
+                if (!files.TryAdd(path, entry)) throw new System.IO.InvalidDataException("Duplicate index path collision");
 
                 file = fileEntry.NextFileEntry;
             }

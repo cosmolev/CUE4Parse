@@ -321,7 +321,7 @@ public partial class PakFileReader : AbstractAesVfsReader
             var entry = new FPakEntry(this, path, index);
             if (entry is { IsDeleted: true, Size: 0 }) continue;
             if (entry.IsEncrypted) EncryptedFileCount++;
-            files[path] = entry;
+            if (!files.TryAdd(path, entry)) throw new System.IO.InvalidDataException("Duplicate index path collision");
         }
 
         Files = files;
@@ -467,7 +467,7 @@ public partial class PakFileReader : AbstractAesVfsReader
                     entry.Path = path;
                 }
                 if (entry.IsEncrypted) EncryptedFileCount++;
-                files[path] = entry;
+                if (!files.TryAdd(path, entry)) throw new System.IO.InvalidDataException("Duplicate index path collision");
             }
         }
 
@@ -558,7 +558,7 @@ public partial class PakFileReader : AbstractAesVfsReader
                 }
 
                 if (entry.IsEncrypted) EncryptedFileCount++;
-                files[path] = entry;
+                if (!files.TryAdd(path, entry)) throw new System.IO.InvalidDataException("Duplicate index path collision");
             }
         }
     }
@@ -601,7 +601,7 @@ public partial class PakFileReader : AbstractAesVfsReader
 
                 if (entry is { IsDeleted: true, Size: 0 }) continue;
                 if (entry.IsEncrypted) EncryptedFileCount++;
-                files[path] = entry;
+                if (!files.TryAdd(path, entry)) throw new System.IO.InvalidDataException("Duplicate index path collision");
             }
         }
 

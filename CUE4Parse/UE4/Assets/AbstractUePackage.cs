@@ -87,6 +87,8 @@ public abstract class AbstractUePackage : UObject, IPackage
         {
             if (serialSize == 0) return; // Empty Export
             obj.Deserialize(Ar, validPos);
+            if (Ar.Position > validPos)
+                throw new System.IO.InvalidDataException("Export serialization exceeded its declared size");
 #if DEBUG
             var remaining = validPos - Ar.Position;
             switch (remaining)

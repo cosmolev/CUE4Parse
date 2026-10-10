@@ -117,10 +117,12 @@ namespace CUE4Parse.UE4.Readers
         public virtual T[] ReadArray<T>(int length)
         {
             var size = Unsafe.SizeOf<T>();
-            var readLength = size * length;
+            if (length < 0 || (long) size * length > 256L << 20) throw new System.IO.InvalidDataException("Array allocation limit");
+            var readLength = checked(size * length);
             CheckReadSize(readLength);
 
             var buffer = ReadBytes(readLength);
+            if (length < 0 || (long) Unsafe.SizeOf<T>() * length > 256L << 20) throw new System.IO.InvalidDataException("Array allocation limit");
             var result = new T[length];
             if (length > 0) Unsafe.CopyBlockUnaligned(ref Unsafe.As<T, byte>(ref result[0]), ref buffer[0], (uint)(readLength));
             return result;
@@ -163,6 +165,7 @@ namespace CUE4Parse.UE4.Readers
         {
             if (length == 0) return [];
 
+            if (length < 0 || (long) Unsafe.SizeOf<T>() * length > 256L << 20) throw new System.IO.InvalidDataException("Array allocation limit");
             var result = new T[length];
             ReadArray(result, getter);
             return result;
@@ -172,6 +175,7 @@ namespace CUE4Parse.UE4.Readers
         public T[] ReadArray<T, TContext>(int length, TContext[] context, Func<TContext, T> getter)
         {
             if (length == 0) return [];
+            if (length < 0 || (long) Unsafe.SizeOf<T>() * length > 256L << 20) throw new System.IO.InvalidDataException("Array allocation limit");
             var result = new T[length];
             for (int i = 0; i < length; i++)
             {

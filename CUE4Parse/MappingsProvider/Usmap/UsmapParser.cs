@@ -87,6 +87,7 @@ public class UsmapParser
 
         Ar = new FUsmapReader(new FByteArchive(Ar.Name, data), Ar.Version);
         var nameSize = Ar.Read<uint>();
+        if (nameSize > 262144 || nameSize > Ar.Length - Ar.Position) throw new System.IO.InvalidDataException("Mapping table limit");
         var nameLut = new List<string>((int) nameSize);
         for (var i = 0; i < nameSize; i++)
         {
@@ -95,6 +96,7 @@ public class UsmapParser
         }
 
         var enumCount = Ar.Read<uint>();
+        if (enumCount > 65536 || enumCount > Ar.Length - Ar.Position) throw new System.IO.InvalidDataException("Mapping table limit");
         var enums = new Dictionary<string, Dictionary<long, string>>((int) enumCount);
         for (var i = 0; i < enumCount; i++)
         {
@@ -126,6 +128,7 @@ public class UsmapParser
         }
 
         var structCount = Ar.Read<uint>();
+        if (structCount > 65536 || structCount > Ar.Length - Ar.Position) throw new System.IO.InvalidDataException("Mapping table limit");
         var structs = new Dictionary<string, Struct>(comparer ?? StringComparer.OrdinalIgnoreCase);
 
         var mappings = new TypeMappings(structs, enums);

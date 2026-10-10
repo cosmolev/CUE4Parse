@@ -88,6 +88,9 @@ namespace CUE4Parse.UE4.Assets
             uassetAr.Position -= 4;
 
             Summary = new FPackageFileSummary(uassetAr);
+            if (Summary.NameCount < 0 || Summary.NameCount > 131072 || Summary.ImportCount < 0 || Summary.ImportCount > 65536
+                || Summary.ExportCount < 0 || Summary.ExportCount > 256)
+                throw new System.IO.InvalidDataException("Package table limit");
 
             // Decompresses CompressedChunks and Decrypts Rocket league encrypted files
             DecryptAndDecompress(uassetAr, Summary);
